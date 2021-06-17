@@ -1,35 +1,32 @@
 import pytest
-# from Base import WebDriver
-import self as self
+from PageObjects import weatherAPI
+from PageObjects import Weatherpage
+from PageObjects import Configuration as config
 
-from Base.Utilities import Utils
-from Base import Weather_Report
-from Base import Weather_API
+@pytest.mark.usefixtures('setup', 'po')
+class TestComparator:
+    @pytest.fixture(scope='class')
+    def po(self, request):
+        weather = Weatherpage(self.driver)
+        weather_api = weatherAPI()
+        request.cls.weather = weather
+        request.cls.weather_api = weather_api
 
-by = None
-we = Utils(driver='edge')
-we.open()
-by = we.find_element(self,'xpath')
-#we.find_element(self,by)
-print(by)
+    @pytest.mark.parametrize('city', config.cities)
+    def test_temperature_variance(self, city):
+        self.city= city
+        temp_variance= config.variance
+        temperature_from_UI= self.retrieve_temp(self,city)
+        temperatur_from_API= self.weather_api.retrieve_data_from_api(city)
 
+        temp_diff= abs(temperature_from_UI - temperature_from_API)
+        assert (temp_diff<= temp_variance) is True, 'Variation is out of acceptable range'
 
-    # def po(self,request):
-    #     weather = Weather_Report(self.driver)
-    #     weather_api = Weather_API()
-    #     request.cls.weather = weather
-    #     request.cls.weather_api = weather_api
-    #
-    # def temp_variance(self,city):
-    #     variance = 3
-    #     temperature_from_UI = self.weather.retrieve_temp(city)
-    #     temperature_from_API= self.weather_api.retrieve_data_from_api()
-    #     difference = temperature_from_UI - temperature_from_API
-    #     assert (difference<=variance) is True, 'Temperature variation is out of acceptable limit'
-    # def humidity_variance(self,city):
-    #     variance= 3
-    #     humidity_from_UI= self.weather.retrieve_humidity()
-    #     humidity_from_API= self.weather_api.retrieve_humidity()
-    #     difference = humidity_from_UI - humidity_from_API
-    #     assert(difference<=variance) is True, 'Humidity is out of acceptable limit'
-
+    @pytest.mark.parametrize('city',config.cities)
+    def test_humidity_variance(self,city):
+        self.city= city
+        humidity_variance= config.humidity_variance
+        humidity_from_web = self.weather.retrieve_humidity(city)
+        humidity_from_API= self.weather_api.retrieve_data_from_api(city)
+        humidity_diff= abs(humidity_variance - humidity_from_API)
+        assert (humidity_diff<= humidity_variance) is True, 'Humidity is out of acceptable range'
