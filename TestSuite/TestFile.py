@@ -30,3 +30,8 @@ class TestComparator:
         humidity_from_API= self.weather_api.retrieve_data_from_api(city)
         humidity_diff= abs(humidity_variance - humidity_from_API)
         assert (humidity_diff<= humidity_variance) is True, 'Humidity is out of acceptable range'
+    def addition():
+        var a= 5
+        var b= 7
+        var result= (a+b)
+        print(result)
