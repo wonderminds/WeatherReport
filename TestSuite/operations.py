@@ -1,3 +1,4 @@
+#defining a generic function for subtraction
 def subtraction(var a, var b):
     a= int(input('Enter a number')
     b= int(input('Enter another number')
